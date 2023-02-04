@@ -1,6 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
-from pprint import pprint
+
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -13,6 +13,7 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('love_sandwiches')
 
+
 def get_sales_data():
     """
     Get sales figures input from the users
@@ -22,15 +23,16 @@ def get_sales_data():
         print('Data should be six numbers,seperated by commas.')
         print('Example: 10,20,30,40,50,60\n')
 
-        data_str = input('Enter your data here:')
+        data_str = input('Enter your data here:\n')
 
         sales_data = data_str.split(",")
-        
+               
         if validate_data(sales_data):
             print("Data is valid!")
             break
 
     return sales_data
+
 
 def validate_data(values):
     """
@@ -80,6 +82,7 @@ def update_worksheet(data, worksheet):
     worksheet_to_update.append_row(data)
     print(f"{worksheet} worksheet updated sucsessfully\n")
 
+
 def calculate_surplus_data(sales_row):
     """
     Compare sales with stock and calculate the surplus for each item type.
@@ -89,7 +92,7 @@ def calculate_surplus_data(sales_row):
     """
     print("Calculating surplus data...\n ")
     stock = SHEET.worksheet("stock").get_all_values()
-    stock_row = stock [-1]
+    stock_row = stock[-1]
     
     surplus_data = []
     for stock, sales in zip(stock_row, sales_row):
@@ -97,6 +100,7 @@ def calculate_surplus_data(sales_row):
         surplus_data.append(surplus)
     
     return surplus_data
+
 
 def get_last_5_enteries_sales():
     """
@@ -106,7 +110,6 @@ def get_last_5_enteries_sales():
     """
     sales = SHEET.worksheet("sales")
     
-
     columns = []
     for ind in range(1, 7):
         column = sales.col_values(ind)
@@ -114,12 +117,13 @@ def get_last_5_enteries_sales():
 
     return columns
 
+
 def calculate_stock_data(data):
     """
     Calculate the average stock for each item type, adding 10%
     """
     print("calculating stock data...\n")
-    new_stock_data =[]
+    new_stock_data = []
 
     for column in data:
         int_column = [int(num) for num in column]
@@ -128,6 +132,7 @@ def calculate_stock_data(data):
         new_stock_data.append(round(stock_num))
 
     return new_stock_data
+
 
 def main():
     """
@@ -142,6 +147,6 @@ def main():
     stock_data = calculate_stock_data(sales_columns)
     update_worksheet(stock_data, "stock")
 
+
 print("Welcome to love sandwiches data automation")
 main()
-
